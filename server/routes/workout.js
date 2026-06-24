@@ -39,5 +39,31 @@ router.delete("/:id", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });
+// Get workout stats
+router.get("/stats", authMiddleware, async (req, res) => {
+  try {
+    const workouts = await Workout.find({ user: req.user });
+    
+    const total = workouts.length;
+    
+    // Most trained category
+    const categoryCounts = {};
+    workouts.forEach((w) => {
+      categoryCounts[w.category] = (categoryCounts[w.category] || 0) + 1;
+    });
+    const topCategory = Object.keys(categoryCounts).sort(
+      (a, b) => categoryCounts[b] - categoryCounts[a]
+    )[0] || "N/A";
+
+    // This week's workouts
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    const thisWeek = workouts.filter((w) => new Date(w.date) > oneWeekAgo).length;
+
+    res.json({ total, topCategory, thisWeek, categoryCounts });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
 
 module.exports = router;

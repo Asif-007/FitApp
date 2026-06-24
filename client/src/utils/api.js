@@ -1,5 +1,6 @@
 import axios from "axios";
-
+export const getWorkoutStats = () => API.get("/workout/stats");
+export const getDietStats    = () => API.get("/diet/stats");
 const API = axios.create({ baseURL: "http://localhost:5000/api" });
 
 API.interceptors.request.use((req) => {

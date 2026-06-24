@@ -39,5 +39,26 @@ router.delete("/:id", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });
+// Get today's diet stats
+router.get("/stats", authMiddleware, async (req, res) => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const entries = await Diet.find({
+      user: req.user,
+      date: { $gte: today },
+    });
+
+    const totalCalories = entries.reduce((sum, e) => sum + e.calories, 0);
+    const totalProtein  = entries.reduce((sum, e) => sum + e.protein, 0);
+    const totalCarbs    = entries.reduce((sum, e) => sum + e.carbs, 0);
+    const totalFats     = entries.reduce((sum, e) => sum + e.fats, 0);
+
+    res.json({ totalCalories, totalProtein, totalCarbs, totalFats, meals: entries.length });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
 
 module.exports = router;
