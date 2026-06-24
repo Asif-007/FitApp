@@ -1,33 +1,44 @@
-import { Route, Routes, Link, useNavigate } from "react-router";
-import NearGym from "./NearGym";
-import Diet from "./Diet";
-import Workout from "./Workout";
-import Explore from "./Explore";
+import { Link, useNavigate } from "react-router";
+
 export default function Home() {
   const navigate = useNavigate();
-  function navi() {
-    navigate('/');
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  function handleLogout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
   }
+
   return (
-    <>
-      <div className="bg-gray-700 flex gap-180 h-50">
-        <div>
-          <a>
-            <img
-              onClick={navi}
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5BYp_KyvCbJMmMIVc5N9Ft8PoPN5Sn0TyLg&s"
-              className="w-50 cursor-pointer h-50 p-10 rounded-full ml-10"
-              alt="Logo"
-            ></img>
-          </a>
-        </div>
-        <div className="flex gap-20 items-center text-white text-2xl mr-15">
-          <Link to='Explore'>Explore</Link>
-          <Link to="NearGym">Nearest Gym</Link>
-          <Link to='Workout'>Workout</Link>
-          <Link to='Diet'>Diet</Link>
-        </div>
+    <div className="bg-gray-700 flex justify-between items-center h-20 px-10">
+      <img
+        onClick={() => navigate("/")}
+        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5BYp_KyvCbJMmMIVc5N9Ft8PoPN5Sn0TyLg&s"
+        className="w-16 h-16 cursor-pointer rounded-full"
+        alt="Logo"
+      />
+      <div className="flex gap-10 items-center text-white text-xl">
+        <Link to="Explore">Explore</Link>
+        <Link to="NearGym">Nearest Gym</Link>
+        <Link to="Workout">Workout</Link>
+        <Link to="Diet">Diet</Link>
+        {user ? (
+          <div className="flex items-center gap-4">
+            <span className="text-green-400">Hi, {user.name}</span>
+            <button
+              onClick={handleLogout}
+              className="bg-red-600 px-4 py-2 rounded-lg hover:bg-red-700"
+            >
+              Logout
+            </button>
+          </div>
+        ) : (
+          <Link to="login" className="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700">
+            Login
+          </Link>
+        )}
       </div>
-    </>
+    </div>
   );
 }
